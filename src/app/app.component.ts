@@ -58,7 +58,7 @@ export class AppComponent {
     for (let i = 0; i < this.numeroDeJogos; i++) {
       let jogo: number[] = [];
       let numerosRestante = Array.from({ length: 60 }, (_, i) => i + 1);
-      while (jogo.length < 6) {
+      while (jogo.length < this.numeroDeDezenas) {
         const sorteado = Math.floor(Math.random() * numerosRestante.length);
         jogo.push(numerosRestante[sorteado]);
         numerosRestante = numerosRestante.filter(
