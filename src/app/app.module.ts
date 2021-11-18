@@ -6,9 +6,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BolaComponent } from './components/bola/bola.component';
 import { DetalhesComponent } from './components/detalhes/detalhes.component';
+import { QuadranteComponent } from './components/quadrante/quadrante.component';
 
 @NgModule({
-  declarations: [AppComponent, BolaComponent, DetalhesComponent],
+  declarations: [
+    AppComponent,
+    BolaComponent,
+    DetalhesComponent,
+    QuadranteComponent,
+  ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent],
