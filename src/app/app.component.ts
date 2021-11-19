@@ -30,6 +30,8 @@ export class AppComponent {
   numeroDeJogos: number = 1;
   numeroDeDezenas: number = 6;
   qtdParImpar = '';
+  qtdPar = 0;
+  qtdImpar = 0;
   qtdNegativas: number = 0;
   naoAdicionarNegativas: boolean = true;
   numerosSeguidos: boolean = true;
@@ -46,6 +48,35 @@ export class AppComponent {
 
   detalhesQuadrantes(): void {
     this.mostrarQuadrantes = !this.mostrarQuadrantes;
+  }
+
+  definiTotalImparPar() {
+    switch (this.qtdParImpar) {
+      case '3 pares e 3 ímpares':
+        this.qtdPar = 3;
+        this.qtdImpar = 3;
+        break;
+      case '4 pares e 2 ímpares':
+        this.qtdPar = 4;
+        this.qtdImpar = 2;
+        break;
+      case '2 pares e 4 ímpares':
+        this.qtdPar = 2;
+        this.qtdImpar = 4;
+        break;
+      case 'Mesma quantidade Par e Impar':
+        if ((this.numeroDeDezenas - this.qtdNegativas) / 2 == 0) {
+          this.qtdPar = (this.numeroDeDezenas - this.qtdNegativas) / 2;
+          this.qtdImpar = (this.numeroDeDezenas - this.qtdNegativas) / 2;
+        } else {
+          this.qtdPar = (this.numeroDeDezenas - 1 - this.qtdNegativas) / 2;
+          this.qtdImpar = (this.numeroDeDezenas - 1 - this.qtdNegativas) / 2;
+          this.qtdPar++;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   gerarJogoAleatorio() {
@@ -74,6 +105,7 @@ export class AppComponent {
   }
 
   gerarJogosComRegras() {
+    this.definiTotalImparPar();
     if (this.numeroDeJogos <= 0) {
       toastr.error('Numero de jogos deve ser maior que 0', 'Erro', {
         timeOut: 8000,
@@ -102,6 +134,11 @@ export class AppComponent {
           const sorteado = Math.floor(
             Math.random() * numerosRestanteNegativas.length
           );
+          if (numerosRestanteNegativas[sorteado] / 2 == 0) {
+            this.qtdPar--;
+          } else {
+            this.qtdImpar--;
+          }
           jogo.push(numerosRestanteNegativas[sorteado]);
           numerosRestanteNegativas = numerosRestanteNegativas.filter(
             (n) => n != numerosRestanteNegativas[sorteado]
@@ -110,68 +147,259 @@ export class AppComponent {
       }
 
       let numerosRestante: number[] = [];
-      if (this.checkQuadrante1) {
-        numerosRestante = [];
-        this.quadrante1.completo.forEach((element) => {
-          numerosRestante.push(element);
-        });
+      let numerosRestantePares: number[] = [];
+      let numerosRestanteImpares: number[] = [];
+
+      if (this.qtdParImpar == '') {
+        this.qtdParImpar = 'Aleatório';
+      }
+      if (this.qtdParImpar == 'Aleatório') {
+        if (this.checkQuadrante1) {
+          this.quadrante1.completo.forEach((element) => {
+            numerosRestante.push(element);
+          });
+        }
+
+        if (this.checkQuadrante2) {
+          this.quadrante2.completo.forEach((element) => {
+            numerosRestante.push(element);
+          });
+        }
+
+        if (this.checkQuadrante3) {
+          this.quadrante3.completo.forEach((element) => {
+            numerosRestante.push(element);
+          });
+        }
+
+        if (this.checkQuadrante4) {
+          this.quadrante4.completo.forEach((element) => {
+            numerosRestante.push(element);
+          });
+        }
+      } else {
+        if (this.checkQuadrante1) {
+          this.quadrante1.pares.forEach((element) => {
+            numerosRestantePares.push(element);
+          });
+          this.quadrante1.impares.forEach((element) => {
+            numerosRestanteImpares.push(element);
+          });
+        }
+
+        if (this.checkQuadrante2) {
+          this.quadrante2.pares.forEach((element) => {
+            numerosRestantePares.push(element);
+          });
+          this.quadrante2.impares.forEach((element) => {
+            numerosRestanteImpares.push(element);
+          });
+        }
+
+        if (this.checkQuadrante3) {
+          this.quadrante3.pares.forEach((element) => {
+            numerosRestantePares.push(element);
+          });
+          this.quadrante3.impares.forEach((element) => {
+            numerosRestanteImpares.push(element);
+          });
+        }
+
+        if (this.checkQuadrante4) {
+          this.quadrante4.pares.forEach((element) => {
+            numerosRestantePares.push(element);
+          });
+          this.quadrante4.impares.forEach((element) => {
+            numerosRestanteImpares.push(element);
+          });
+        }
       }
 
-      if (this.checkQuadrante2) {
-        this.quadrante2.completo.forEach((element) => {
-          numerosRestante.push(element);
-        });
-      }
-
-      if (this.checkQuadrante3) {
-        this.quadrante3.completo.forEach((element) => {
-          numerosRestante.push(element);
-        });
-      }
-
-      if (this.checkQuadrante4) {
-        this.quadrante4.completo.forEach((element) => {
-          numerosRestante.push(element);
-        });
-      }
-
-      if (numerosRestante.length <= 0) {
+      if (numerosRestante.length <= 0 && this.qtdParImpar == 'Aleatório') {
         toastr.error(
           'Não foi possivel gerar o jogo pois não tem numeros suficientes para completar o jogo com as regras selecionadas',
-          'Erro',
+          'Erro xF1001',
           { timeOut: 8000 }
         );
         return;
       }
 
       /* remover negativas */
-      this.dezenasNegativas.forEach((d) => {
-        numerosRestante = numerosRestante.filter((n) => n != d);
-      });
+      if (this.qtdParImpar == 'Aleatório') {
+        this.dezenasNegativas.forEach((d) => {
+          numerosRestante = numerosRestante.filter((n) => n != d);
+        });
+      } else {
+        this.dezenasNegativas.forEach((d) => {
+          numerosRestantePares = numerosRestantePares.filter((n) => n != d);
+        });
 
-      while (jogo.length < this.numeroDeDezenas) {
-        if(numerosRestante.length <= 0) {
-          toastr.error(
-            'Não foi possivel gerar o jogo pois não tem numeros suficientes para completar o jogo com as regras selecionadas',
-            'Erro',
-            { timeOut: 8000 }
-          );
-          return;
-        }
-        const sorteado = Math.floor(Math.random() * numerosRestante.length);
-
-        const sequencial = jogo.find(x => ((x + 1) == numerosRestante[sorteado] || ((x -1) == numerosRestante[sorteado])));
-
-
-        /* Removendo numero que seria sequencial */
-        if(sequencial == undefined) {
-          jogo.push(numerosRestante[sorteado]);
-        }
-
-        numerosRestante = numerosRestante.filter(
-          (n) => n != numerosRestante[sorteado]
-        );
+        this.dezenasNegativas.forEach((d) => {
+          numerosRestanteImpares = numerosRestanteImpares.filter((n) => n != d);
+        });
       }
+
+      if (this.qtdParImpar == 'Aleatório') {
+        while (jogo.length < this.numeroDeDezenas) {
+          if (numerosRestante.length <= 0) {
+            toastr.error(
+              'Não foi possivel gerar o jogo pois não tem numeros suficientes para completar o jogo com as regras selecionadas',
+              'Erro xF1002',
+              { timeOut: 8000 }
+            );
+            return;
+          }
+          const sorteado = Math.floor(Math.random() * numerosRestante.length);
+          let mesmaColuna = false;
+          let numeroSequencial = false;
+
+          /* Faz a validação se o numero é sequencial */
+          if (this.numerosSeguidos) {
+            const sequencial = jogo.find(
+              (x) =>
+                x + 1 == numerosRestante[sorteado] ||
+                x - 1 == numerosRestante[sorteado]
+            );
+
+            if (sequencial != undefined) {
+              numeroSequencial = true;
+            }
+          }
+
+          /* Faz a validação de numero na vertical */
+          if (this.numerosMesmaColuna) {
+            Object.entries(this.colunas).forEach((coluna) => {
+              const colunaDoNumeroSorteado = coluna[1].find(
+                (x) => x == numerosRestante[sorteado]
+              );
+              if (colunaDoNumeroSorteado) {
+                const interseccao = coluna[1].filter((x) => jogo.includes(x));
+                if (interseccao.length > 0) {
+                  mesmaColuna = true;
+                }
+              }
+            });
+          }
+
+          /* Removendo numero que seria sequencial é/ou vertical */
+          if (!numeroSequencial && !mesmaColuna) {
+            jogo.push(numerosRestante[sorteado]);
+          }
+
+          numerosRestante = numerosRestante.filter(
+            (n) => n != numerosRestante[sorteado]
+          );
+        }
+      } else {
+        /* Adiciona numeros pares */
+        for (let p = 0; p < this.qtdPar; ) {
+          if (numerosRestantePares.length <= 0) {
+            toastr.error(
+              'Não foi possivel gerar o jogo pois não tem numeros suficientes para completar o jogo com as regras selecionadas',
+              'Erro xF1003',
+              { timeOut: 8000 }
+            );
+            return;
+          }
+
+          const sorteado = Math.floor(Math.random() * numerosRestantePares.length);
+          let mesmaColuna = false;
+          let numeroSequencial = false;
+
+          /* Faz a validação se o numero é sequencial */
+          if (this.numerosSeguidos) {
+            const sequencial = jogo.find(
+              (x) =>
+                x + 1 == numerosRestantePares[sorteado] ||
+                x - 1 == numerosRestantePares[sorteado]
+            );
+
+            if (sequencial != undefined) {
+              numeroSequencial = true;
+            }
+          }
+
+          /* Faz a validação de numero na vertical */
+          if (this.numerosMesmaColuna) {
+            Object.entries(this.colunas).forEach((coluna) => {
+              const colunaDoNumeroSorteado = coluna[1].find(
+                (x) => x == numerosRestantePares[sorteado]
+              );
+              if (colunaDoNumeroSorteado) {
+                const interseccao = coluna[1].filter((x) => jogo.includes(x));
+                if (interseccao.length > 0) {
+                  mesmaColuna = true;
+                }
+              }
+            });
+          }
+
+          /* Removendo numero que seria sequencial é ou vertical */
+          if (!numeroSequencial && !mesmaColuna) {
+            jogo.push(numerosRestantePares[sorteado]);
+            p++;
+          }
+
+          numerosRestantePares = numerosRestantePares.filter(
+            (n) => n != numerosRestantePares[sorteado]
+          );
+        }
+
+        /* Adiciona numeros impares */
+        for (let p = 0; p < this.qtdImpar; ) {
+          if (numerosRestanteImpares.length <= 0) {
+            toastr.error(
+              'Não foi possivel gerar o jogo pois não tem numeros suficientes para completar o jogo com as regras selecionadas',
+              'Erro xF1004',
+              { timeOut: 8000 }
+            );
+            return;
+          }
+
+          const sorteado = Math.floor(Math.random() * numerosRestanteImpares.length);
+          let mesmaColuna = false;
+          let numeroSequencial = false;
+
+          /* Faz a validação se o numero é sequencial */
+          if (this.numerosSeguidos) {
+            const sequencial = jogo.find(
+              (x) =>
+                x + 1 == numerosRestanteImpares[sorteado] ||
+                x - 1 == numerosRestanteImpares[sorteado]
+            );
+
+            if (sequencial != undefined) {
+              numeroSequencial = true;
+            }
+          }
+
+          /* Faz a validação de numero na vertical */
+          if (this.numerosMesmaColuna) {
+            Object.entries(this.colunas).forEach((coluna) => {
+              const colunaDoNumeroSorteado = coluna[1].find(
+                (x) => x == numerosRestanteImpares[sorteado]
+              );
+              if (colunaDoNumeroSorteado) {
+                const interseccao = coluna[1].filter((x) => jogo.includes(x));
+                if (interseccao.length > 0) {
+                  mesmaColuna = true;
+                }
+              }
+            });
+          }
+
+          /* Removendo numero que seria sequencial é ou vertical */
+          if (!numeroSequencial && !mesmaColuna) {
+            jogo.push(numerosRestanteImpares[sorteado]);
+            p++;
+          }
+
+          numerosRestanteImpares = numerosRestanteImpares.filter(
+            (n) => n != numerosRestanteImpares[sorteado]
+          );
+        }
+      }
+
       jogo.sort((a, b) => a - b);
       this.jogos.push(jogo);
     }

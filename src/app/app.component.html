@@ -30,12 +30,13 @@
           </div>
 
           <label for="tipoParImpar" class="form-label">Distribuição par e ímpar</label>
-          <input [(ngModel)]="qtdParImpar" class="form-control" list="pareimparlista" id="tipoParImpar"
+          <input [(ngModel)]="qtdParImpar" (change)="definiTotalImparPar()" class="form-control" list="pareimparlista" id="tipoParImpar"
             placeholder="pares e impares">
           <datalist id="pareimparlista">
             <option value="3 pares e 3 ímpares"></option>
             <option value="4 pares e 2 ímpares"></option>
             <option value="2 pares e 4 ímpares"></option>
+            <option value="Mesma quantidade Par e Impar"></option>
             <option value="Aleatório">
           </datalist>
 
