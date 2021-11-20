@@ -65,13 +65,14 @@ export class AppComponent {
         this.qtdImpar = 4;
         break;
       case 'Mesma quantidade Par e Impar':
-        if ((this.numeroDeDezenas - this.qtdNegativas) / 2 == 0) {
-          this.qtdPar = (this.numeroDeDezenas - this.qtdNegativas) / 2;
-          this.qtdImpar = (this.numeroDeDezenas - this.qtdNegativas) / 2;
-        } else {
-          this.qtdPar = (this.numeroDeDezenas - 1 - this.qtdNegativas) / 2;
-          this.qtdImpar = (this.numeroDeDezenas - 1 - this.qtdNegativas) / 2;
+        const metadeDezenas = this.numeroDeDezenas - this.qtdNegativas;
+        if (metadeDezenas & 1) {
+          this.qtdPar = (this.numeroDeDezenas - 1) / 2;
+          this.qtdImpar = (this.numeroDeDezenas - 1) / 2;
           this.qtdPar++;
+        } else {
+          this.qtdPar = this.numeroDeDezenas / 2;
+          this.qtdImpar = this.numeroDeDezenas / 2;
         }
         break;
       default:
@@ -105,7 +106,6 @@ export class AppComponent {
   }
 
   gerarJogosComRegras() {
-    this.definiTotalImparPar();
     if (this.numeroDeJogos <= 0) {
       toastr.error('Numero de jogos deve ser maior que 0', 'Erro', {
         timeOut: 8000,
@@ -126,6 +126,8 @@ export class AppComponent {
           return;
         }
       }
+      this.definiTotalImparPar();
+
 
       /* Adiciona as negativas ao jogo atual */
       if (this.qtdNegativas > 0) {
@@ -145,6 +147,7 @@ export class AppComponent {
           );
         }
       }
+
 
       let numerosRestante: number[] = [];
       let numerosRestantePares: number[] = [];
